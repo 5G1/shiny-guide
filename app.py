@@ -22,25 +22,23 @@ def split_sentences(text):
     sentences = re.split(r'(?<=[。！？.!?])', text)
     return [s.strip() for s in sentences if s.strip()]
 
+def clean_keywords(keyword_input):
+    keywords = re.split(r'[,，\n]', keyword_input)
+    return [k.strip() for k in keywords if k.strip()]
+
 def highlight_keywords(sentence, keywords):
     highlighted = sentence
     for keyword in keywords:
         if keyword:
-            highlighted = highlighted.replace(
-                keyword,
-                f"**{keyword}**"
-            )
+            highlighted = highlighted.replace(keyword, f"**{keyword}**")
     return highlighted
 
-def to_excel(df):
+def to_excel(df, stat_df):
     output = BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
         df.to_excel(writer, index=False, sheet_name="搜索结果")
+        stat_df.to_excel(writer, index=False, sheet_name="关键词统计")
     return output.getvalue()
-
-def clean_keywords(keyword_input):
-    keywords = re.split(r'[,，\n]', keyword_input)
-    return [k.strip() for k in keywords if k.strip()]
 
 if uploaded_file and keyword_input:
     keywords = clean_keywords(keyword_input)
@@ -52,13 +50,30 @@ if uploaded_file and keyword_input:
         doc = fitz.open(stream=pdf_bytes, filetype="pdf")
 
         results = []
+        keyword_stats = {}
+        total_text = ""
+
+        for keyword in keywords:
+            keyword_stats[keyword] = {
+                "出现次数": 0,
+                "关键词字数": len(keyword),
+                "关键词总字数": 0
+            }
+
         progress_bar = st.progress(0)
         status_text = st.empty()
 
         for page_index in range(len(doc)):
             status_text.text(f"正在搜索第 {page_index + 1} / {len(doc)} 页...")
+
             text = doc[page_index].get_text()
+            total_text += text
+
             sentences = split_sentences(text)
+
+            for keyword in keywords:
+                count = text.count(keyword)
+                keyword_stats[keyword]["出现次数"] += count
 
             for sentence_index, sentence in enumerate(sentences):
                 for keyword in keywords:
@@ -81,10 +96,30 @@ if uploaded_file and keyword_input:
 
         status_text.text("搜索完成！")
 
+        total_text_length = len(total_text.replace(" ", "").replace("\n", ""))
+
+        stat_rows = []
+        for keyword, stat in keyword_stats.items():
+            total_keyword_chars = stat["出现次数"] * stat["关键词字数"]
+            keyword_ratio = (total_keyword_chars / total_text_length * 100) if total_text_length > 0 else 0
+
+            stat_rows.append({
+                "关键词": keyword,
+                "出现次数": stat["出现次数"],
+                "关键词字数": stat["关键词字数"],
+                "关键词总字数": total_keyword_chars,
+                "PDF总字数": total_text_length,
+                "关键词占比": f"{keyword_ratio:.4f}%"
+            })
+
         df = pd.DataFrame(results)
+        stat_df = pd.DataFrame(stat_rows)
+
+        st.subheader("📊 关键词统计")
+        st.dataframe(stat_df, use_container_width=True)
 
         st.subheader("🔍 搜索结果")
-        st.write(f"共找到 {len(results)} 条结果。")
+        st.write(f"共找到 {len(results)} 条句子结果。")
 
         if not df.empty:
             st.dataframe(df, use_container_width=True)
@@ -99,7 +134,7 @@ if uploaded_file and keyword_input:
                 )
                 st.divider()
 
-            excel_file = to_excel(df)
+            excel_file = to_excel(df, stat_df)
 
             st.download_button(
                 label="下载Excel结果",
