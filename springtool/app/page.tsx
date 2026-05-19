@@ -75,6 +75,10 @@ const translations = {
     pages: "PDF Pages",
     matchedResults: "Matched Results",
 
+    exportTitle: "Export Results",
+    downloadExcel: "Download Excel",
+    downloadWord: "Download Word",
+
     keywordStats: "Keyword Statistics",
     appeared: "Appeared",
     times: "times",
@@ -89,7 +93,12 @@ const translations = {
     uploadAlert: "Please upload a PDF file first.",
     keywordAlert: "Please enter at least one keyword.",
     backendAlert: "Backend connection failed. Please check if FastAPI is running.",
+    excelFail: "Excel download failed. Please try again.",
+    wordFail: "Word download failed. Please try again.",
     noResult: "No matched sentences found.",
+
+    developer: "Developer",
+    contact: "Contact",
   },
 
   zh: {
@@ -126,6 +135,10 @@ const translations = {
     pages: "PDF 页数",
     matchedResults: "匹配结果",
 
+    exportTitle: "导出结果",
+    downloadExcel: "下载 Excel",
+    downloadWord: "下载 Word",
+
     keywordStats: "关键词统计",
     appeared: "出现",
     times: "次",
@@ -140,7 +153,12 @@ const translations = {
     uploadAlert: "请先上传 PDF 文件。",
     keywordAlert: "请输入至少一个关键词。",
     backendAlert: "后端连接失败，请确认 FastAPI 是否正在运行。",
+    excelFail: "Excel 下载失败，请稍后再试。",
+    wordFail: "Word 下载失败，请稍后再试。",
     noResult: "没有找到匹配句子。",
+
+    developer: "开发者",
+    contact: "联系方式",
   },
 
   ko: {
@@ -178,6 +196,10 @@ const translations = {
     pages: "PDF 페이지 수",
     matchedResults: "매칭 결과",
 
+    exportTitle: "결과 내보내기",
+    downloadExcel: "Excel 다운로드",
+    downloadWord: "Word 다운로드",
+
     keywordStats: "키워드 통계",
     appeared: "등장",
     times: "회",
@@ -192,7 +214,12 @@ const translations = {
     uploadAlert: "먼저 PDF 파일을 업로드해주세요.",
     keywordAlert: "키워드를 최소 1개 입력해주세요.",
     backendAlert: "백엔드 연결에 실패했습니다. FastAPI 실행 여부를 확인해주세요.",
+    excelFail: "Excel 다운로드에 실패했습니다. 다시 시도해주세요.",
+    wordFail: "Word 다운로드에 실패했습니다. 다시 시도해주세요.",
     noResult: "매칭된 문장이 없습니다.",
+
+    developer: "개발자",
+    contact: "연락처",
   },
 
   ja: {
@@ -230,6 +257,10 @@ const translations = {
     pages: "PDFページ数",
     matchedResults: "一致結果",
 
+    exportTitle: "結果をエクスポート",
+    downloadExcel: "Excelをダウンロード",
+    downloadWord: "Wordをダウンロード",
+
     keywordStats: "キーワード統計",
     appeared: "出現",
     times: "回",
@@ -244,7 +275,12 @@ const translations = {
     uploadAlert: "先にPDFファイルをアップロードしてください。",
     keywordAlert: "キーワードを1つ以上入力してください。",
     backendAlert: "バックエンド接続に失敗しました。FastAPIの起動を確認してください。",
+    excelFail: "Excelのダウンロードに失敗しました。もう一度お試しください。",
+    wordFail: "Wordのダウンロードに失敗しました。もう一度お試しください。",
     noResult: "一致した文がありません。",
+
+    developer: "開発者",
+    contact: "連絡先",
   },
 };
 
@@ -268,6 +304,10 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<ApiResponse | null>(null);
 
+  const getApiUrl = () => {
+    return process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+  };
+
   const handleSearch = async () => {
     if (!file) {
       alert(t.uploadAlert);
@@ -288,15 +328,10 @@ export default function Home() {
     formData.append("use_ocr", String(useOcr));
     formData.append("show_context", String(showContext));
 
-    try {const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    try {
+      const apiUrl = getApiUrl();
 
-if (!apiUrl) {
-  alert("API URL is not configured.");
-  setLoading(false);
-  return;
-}
-
-const response = await fetch(`${apiUrl}/search`, {
+      const response = await fetch(`${apiUrl}/search`, {
         method: "POST",
         body: formData,
       });
@@ -312,6 +347,76 @@ const response = await fetch(`${apiUrl}/search`, {
       alert(t.backendAlert);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownloadExcel = async () => {
+    if (!data) return;
+
+    try {
+      const apiUrl = getApiUrl();
+
+      const response = await fetch(`${apiUrl}/export/excel`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error("Excel export failed");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "springtool_results.xlsx";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+      alert(t.excelFail);
+    }
+  };
+
+  const handleDownloadWord = async () => {
+    if (!data) return;
+
+    try {
+      const apiUrl = getApiUrl();
+
+      const response = await fetch(`${apiUrl}/export/word`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error("Word export failed");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "springtool_results.docx";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+      alert(t.wordFail);
     }
   };
 
@@ -352,19 +457,29 @@ const response = await fetch(`${apiUrl}/search`, {
             {t.badge}
           </div>
 
-          <h1 className="text-6xl font-black text-[#1f4f3a]">
-            {t.title}
-          </h1>
+          <h1 className="text-6xl font-black text-[#1f4f3a]">{t.title}</h1>
 
           <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-[#6b7f71]">
             {t.description}
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Feature text={t.featureLocate} icon={<Search className="h-4 w-4" />} />
-            <Feature text={t.featureOcr} icon={<FileText className="h-4 w-4" />} />
-            <Feature text={t.featureStats} icon={<BarChart3 className="h-4 w-4" />} />
-            <Feature text={t.featureExport} icon={<Download className="h-4 w-4" />} />
+            <Feature
+              text={t.featureLocate}
+              icon={<Search className="h-4 w-4" />}
+            />
+            <Feature
+              text={t.featureOcr}
+              icon={<FileText className="h-4 w-4" />}
+            />
+            <Feature
+              text={t.featureStats}
+              icon={<BarChart3 className="h-4 w-4" />}
+            />
+            <Feature
+              text={t.featureExport}
+              icon={<Download className="h-4 w-4" />}
+            />
           </div>
         </header>
 
@@ -417,9 +532,7 @@ const response = await fetch(`${apiUrl}/search`, {
               <Search className="absolute right-5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#2f6b4f]" />
             </div>
 
-            <p className="mt-3 text-sm text-[#7d8f82]">
-              {t.example}
-            </p>
+            <p className="mt-3 text-sm text-[#7d8f82]">{t.example}</p>
           </Card>
 
           <Card title={t.optionTitle} step="3">
@@ -458,13 +571,38 @@ const response = await fetch(`${apiUrl}/search`, {
           <section className="mt-12 space-y-8">
             <div className="rounded-3xl bg-white p-8 shadow-xl">
               <h2 className="mb-6 text-3xl font-black text-[#2f6b4f]">
+                {t.exportTitle}
+              </h2>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <button
+                  onClick={handleDownloadExcel}
+                  className="rounded-2xl bg-gradient-to-r from-[#6fa26e] to-[#2f6b4f] px-6 py-4 text-lg font-extrabold text-white shadow-lg transition hover:-translate-y-0.5"
+                >
+                  {t.downloadExcel}
+                </button>
+
+                <button
+                  onClick={handleDownloadWord}
+                  className="rounded-2xl border border-[#8bb184] bg-[#fbfcf7] px-6 py-4 text-lg font-extrabold text-[#2f6b4f] shadow-sm transition hover:bg-[#edf7eb]"
+                >
+                  {t.downloadWord}
+                </button>
+              </div>
+            </div>
+
+            <div className="rounded-3xl bg-white p-8 shadow-xl">
+              <h2 className="mb-6 text-3xl font-black text-[#2f6b4f]">
                 {t.pdfAnalysis}
               </h2>
 
               <div className="grid gap-4 md:grid-cols-3">
                 <InfoBox title={t.filename} value={data.filename} />
                 <InfoBox title={t.pages} value={String(data.pages)} />
-                <InfoBox title={t.matchedResults} value={String(data.total_results)} />
+                <InfoBox
+                  title={t.matchedResults}
+                  value={String(data.total_results)}
+                />
               </div>
             </div>
 
@@ -543,7 +681,10 @@ const response = await fetch(`${apiUrl}/search`, {
         )}
 
         <footer className="mt-14 border-t border-[#8bb184]/25 pt-7 text-center text-sm text-[#7d8f82]">
-          © 2026 springtool. Designed with 🌿 for research.
+          <div>© 2026 springtool. Designed with 🌿 for research.</div>
+          <div className="mt-2">
+            {t.developer}: 5G1 · {t.contact}: springtools@gmail.com
+          </div>
         </footer>
       </section>
     </main>
@@ -581,9 +722,7 @@ function Card({
           {step}
         </div>
 
-        <h2 className="text-3xl font-black text-[#2f6b4f]">
-          {title}
-        </h2>
+        <h2 className="text-3xl font-black text-[#2f6b4f]">{title}</h2>
       </div>
 
       {children}
@@ -612,29 +751,17 @@ function OptionCard({
           : "border-[#d7e5d4] bg-[#fbfcf7] hover:border-[#8bb184]"
       }`}
     >
-      <div className="font-black text-[#2f6b4f]">
-        {title}
-      </div>
+      <div className="font-black text-[#2f6b4f]">{title}</div>
 
-      <div className="mt-2 text-sm text-[#6b7f71]">
-        {desc}
-      </div>
+      <div className="mt-2 text-sm text-[#6b7f71]">{desc}</div>
     </button>
   );
 }
 
-function InfoBox({
-  title,
-  value,
-}: {
-  title: string;
-  value: string;
-}) {
+function InfoBox({ title, value }: { title: string; value: string }) {
   return (
     <div className="rounded-2xl bg-[#f8fbf5] p-5">
-      <div className="text-sm text-[#7d8f82]">
-        {title}
-      </div>
+      <div className="text-sm text-[#7d8f82]">{title}</div>
 
       <div className="mt-2 break-words text-2xl font-black text-[#2f6b4f]">
         {value}
