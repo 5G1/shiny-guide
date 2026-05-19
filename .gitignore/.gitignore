@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+backend/venv/
+
+# Node
+node_modules/
+springtool/node_modules/
+.next/
+springtool/.next/
+
+# Env
+.env
+.env.local
+.env.production
+.env.development
+
+# OS
+.DS_Store
+Thumbs.db
