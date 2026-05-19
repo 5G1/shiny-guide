@@ -288,15 +288,7 @@ export default function Home() {
     formData.append("use_ocr", String(useOcr));
     formData.append("show_context", String(showContext));
 
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-if (!apiUrl) {
-  alert("API URL is not configured.");
-  return;
-}
-
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    try {const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 if (!apiUrl) {
   alert("API URL is not configured.");
