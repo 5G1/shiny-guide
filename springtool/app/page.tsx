@@ -289,7 +289,22 @@ export default function Home() {
     formData.append("show_context", String(showContext));
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/search", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+if (!apiUrl) {
+  alert("API URL is not configured.");
+  return;
+}
+
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+if (!apiUrl) {
+  alert("API URL is not configured.");
+  setLoading(false);
+  return;
+}
+
+const response = await fetch(`${apiUrl}/search`, {
         method: "POST",
         body: formData,
       });
