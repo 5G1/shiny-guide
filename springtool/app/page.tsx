@@ -14,14 +14,16 @@ import {
 type Lang = "en" | "zh" | "ko" | "ja";
 
 type SearchResult = {
-  page: number;
+  pdf_name: string;
   keyword: string;
-  sentence: string;
+  page_number: number;
+  matched_sentence: string;
   context: string;
   method: string;
 };
 
 type KeywordStat = {
+  pdf_name: string;
   keyword: string;
   count: number;
   keyword_length: number;
@@ -30,13 +32,25 @@ type KeywordStat = {
   ratio: string;
 };
 
-type ApiResponse = {
-  filename: string;
+type FileSummary = {
+  pdf_name: string;
   pages: number;
+  total_results: number;
+  total_chars: number;
+};
+
+type ApiResponse = {
+  pdf_names: string[];
+  total_files: number;
+  total_pages: number;
   keywords: string[];
   total_results: number;
+  file_summaries: FileSummary[];
   stats: KeywordStat[];
+  file_stats: KeywordStat[];
   results: SearchResult[];
+  developer: string;
+  contact: string;
 };
 
 const translations = {
@@ -44,17 +58,17 @@ const translations = {
     badge: "Forest-inspired academic research tool",
     title: "springtool",
     description:
-      "Upload PDFs, search keywords, and instantly extract matching sentences.",
+      "Upload multiple PDFs, search keywords, and extract matching sentences with PDF name and page number.",
     featureLocate: "Precise keyword locating",
     featureOcr: "OCR support",
     featureStats: "Keyword statistics",
     featureExport: "Export results",
 
-    uploadTitle: "Upload PDF File",
-    uploadDesc: "Click or drag your PDF file here",
-    uploadSubDesc: "Single PDF file supported, max 200MB",
-    uploadButton: "Select PDF File",
-    selected: "Selected",
+    uploadTitle: "Upload PDF Files",
+    uploadDesc: "Click or drag multiple PDF files here",
+    uploadSubDesc: "Multiple PDF files supported",
+    uploadButton: "Select PDF Files",
+    selected: "Selected files",
 
     keywordTitle: "Enter Keywords",
     keywordPlaceholder: "Enter keywords, separated by commas",
@@ -68,12 +82,13 @@ const translations = {
 
     startSearch: "Start Search",
     searching: "Searching...",
-    tip: "The more precise the keyword, the more accurate the result.",
+    tip: "Results show PDF name, keyword, page number, and matched sentence.",
 
     pdfAnalysis: "PDF Analysis Results",
-    filename: "Filename",
-    pages: "PDF Pages",
+    totalFiles: "Total Files",
+    totalPages: "Total Pages",
     matchedResults: "Matched Results",
+    fileSummary: "File Summary",
 
     exportTitle: "Export Results",
     downloadExcel: "Download Excel",
@@ -87,10 +102,14 @@ const translations = {
     ratio: "Ratio",
 
     matchedSentences: "Matched Sentences",
-    page: "Page",
+    pdfName: "PDF Name",
+    keyword: "Keyword",
+    pageNumber: "Page Number",
+    sentence: "Matched Sentence",
+    context: "Context",
     method: "Method",
 
-    uploadAlert: "Please upload a PDF file first.",
+    uploadAlert: "Please upload at least one PDF file.",
     keywordAlert: "Please enter at least one keyword.",
     backendAlert: "Backend connection failed. Please check if FastAPI is running.",
     excelFail: "Excel download failed. Please try again.",
@@ -100,21 +119,20 @@ const translations = {
     developer: "Developer",
     contact: "Contact",
   },
-
   zh: {
     badge: "森林风格学术研究工具",
     title: "springtool",
-    description: "上传 PDF，输入关键词，快速定位页码并提取相关句子。",
+    description: "上传多个 PDF，输入关键词，输出 PDF 名称、页码与匹配句子。",
     featureLocate: "精准定位关键词",
     featureOcr: "支持 OCR 识别",
     featureStats: "关键词统计分析",
     featureExport: "一键导出结果",
 
     uploadTitle: "上传 PDF 文件",
-    uploadDesc: "点击或拖拽 PDF 文件到此处",
-    uploadSubDesc: "支持单个 PDF 文件上传，最大 200MB",
+    uploadDesc: "点击或拖拽多个 PDF 文件到此处",
+    uploadSubDesc: "支持多个 PDF 文件上传",
     uploadButton: "选择 PDF 文件",
-    selected: "已选择",
+    selected: "已选择文件",
 
     keywordTitle: "输入关键词",
     keywordPlaceholder: "请输入关键词，多个关键词请用逗号分隔",
@@ -128,12 +146,13 @@ const translations = {
 
     startSearch: "开始搜索",
     searching: "分析中...",
-    tip: "关键词越精确，搜索结果越准确。",
+    tip: "结果会显示 PDF 名称、关键词、页码与匹配句子。",
 
     pdfAnalysis: "PDF 分析结果",
-    filename: "文件名",
-    pages: "PDF 页数",
+    totalFiles: "文件数量",
+    totalPages: "总页数",
     matchedResults: "匹配结果",
+    fileSummary: "文件概览",
 
     exportTitle: "导出结果",
     downloadExcel: "下载 Excel",
@@ -147,10 +166,14 @@ const translations = {
     ratio: "占比",
 
     matchedSentences: "匹配句子",
-    page: "第",
+    pdfName: "PDF 名称",
+    keyword: "关键词",
+    pageNumber: "页码",
+    sentence: "匹配句子",
+    context: "上下文",
     method: "提取方式",
 
-    uploadAlert: "请先上传 PDF 文件。",
+    uploadAlert: "请先上传至少一个 PDF 文件。",
     keywordAlert: "请输入至少一个关键词。",
     backendAlert: "后端连接失败，请确认 FastAPI 是否正在运行。",
     excelFail: "Excel 下载失败，请稍后再试。",
@@ -160,22 +183,21 @@ const translations = {
     developer: "开发者",
     contact: "联系方式",
   },
-
   ko: {
     badge: "숲 감성 학술 연구 도구",
     title: "springtool",
     description:
-      "PDF를 업로드하고 키워드를 검색하여 관련 문장을 빠르게 추출합니다.",
+      "여러 PDF를 업로드하고 키워드를 검색하여 PDF명, 페이지 번호, 매칭 문장을 함께 확인합니다.",
     featureLocate: "키워드 정밀 검색",
     featureOcr: "OCR 지원",
     featureStats: "키워드 통계 분석",
     featureExport: "결과 내보내기",
 
     uploadTitle: "PDF 파일 업로드",
-    uploadDesc: "PDF 파일을 클릭하거나 드래그하세요",
-    uploadSubDesc: "단일 PDF 파일 지원, 최대 200MB",
+    uploadDesc: "여러 PDF 파일을 클릭하거나 드래그하세요",
+    uploadSubDesc: "여러 개의 PDF 파일을 지원합니다",
     uploadButton: "PDF 파일 선택",
-    selected: "선택됨",
+    selected: "선택된 파일",
 
     keywordTitle: "키워드 입력",
     keywordPlaceholder: "키워드를 입력하세요. 여러 개는 쉼표로 구분",
@@ -189,12 +211,13 @@ const translations = {
 
     startSearch: "검색 시작",
     searching: "분석 중...",
-    tip: "키워드가 정확할수록 검색 결과도 정확해집니다.",
+    tip: "결과에는 PDF명, 키워드, 페이지 번호, 매칭 문장이 함께 표시됩니다.",
 
     pdfAnalysis: "PDF 분석 결과",
-    filename: "파일명",
-    pages: "PDF 페이지 수",
+    totalFiles: "파일 수",
+    totalPages: "총 페이지 수",
     matchedResults: "매칭 결과",
+    fileSummary: "파일 요약",
 
     exportTitle: "결과 내보내기",
     downloadExcel: "Excel 다운로드",
@@ -208,10 +231,14 @@ const translations = {
     ratio: "비율",
 
     matchedSentences: "매칭 문장",
-    page: "페이지",
+    pdfName: "PDF명",
+    keyword: "키워드",
+    pageNumber: "페이지 번호",
+    sentence: "매칭 문장",
+    context: "문맥",
     method: "추출 방식",
 
-    uploadAlert: "먼저 PDF 파일을 업로드해주세요.",
+    uploadAlert: "먼저 PDF 파일을 1개 이상 업로드해주세요.",
     keywordAlert: "키워드를 최소 1개 입력해주세요.",
     backendAlert: "백엔드 연결에 실패했습니다. FastAPI 실행 여부를 확인해주세요.",
     excelFail: "Excel 다운로드에 실패했습니다. 다시 시도해주세요.",
@@ -221,22 +248,21 @@ const translations = {
     developer: "개발자",
     contact: "연락처",
   },
-
   ja: {
     badge: "森を感じる学術研究ツール",
     title: "springtool",
     description:
-      "PDFをアップロードし、キーワード検索で関連文章を素早く抽出します。",
+      "複数のPDFからキーワードを検索し、PDF名・ページ番号・一致文章を表示します。",
     featureLocate: "キーワード精密検索",
     featureOcr: "OCR対応",
     featureStats: "キーワード統計分析",
     featureExport: "結果エクスポート",
 
     uploadTitle: "PDFファイルをアップロード",
-    uploadDesc: "PDFファイルをクリックまたはドラッグ",
-    uploadSubDesc: "単一PDFファイル対応、最大200MB",
+    uploadDesc: "複数のPDFファイルをクリックまたはドラッグ",
+    uploadSubDesc: "複数のPDFファイルに対応",
     uploadButton: "PDFファイルを選択",
-    selected: "選択済み",
+    selected: "選択済みファイル",
 
     keywordTitle: "キーワード入力",
     keywordPlaceholder: "キーワードを入力、複数の場合はカンマで区切る",
@@ -250,12 +276,13 @@ const translations = {
 
     startSearch: "検索開始",
     searching: "分析中...",
-    tip: "キーワードが正確なほど、検索結果も正確になります。",
+    tip: "結果にはPDF名、キーワード、ページ番号、一致文章が表示されます。",
 
     pdfAnalysis: "PDF分析結果",
-    filename: "ファイル名",
-    pages: "PDFページ数",
+    totalFiles: "ファイル数",
+    totalPages: "総ページ数",
     matchedResults: "一致結果",
+    fileSummary: "ファイル概要",
 
     exportTitle: "結果をエクスポート",
     downloadExcel: "Excelをダウンロード",
@@ -269,10 +296,14 @@ const translations = {
     ratio: "比率",
 
     matchedSentences: "一致した文",
-    page: "ページ",
+    pdfName: "PDF名",
+    keyword: "キーワード",
+    pageNumber: "ページ番号",
+    sentence: "一致文章",
+    context: "文脈",
     method: "抽出方式",
 
-    uploadAlert: "先にPDFファイルをアップロードしてください。",
+    uploadAlert: "先にPDFファイルを1つ以上アップロードしてください。",
     keywordAlert: "キーワードを1つ以上入力してください。",
     backendAlert: "バックエンド接続に失敗しました。FastAPIの起動を確認してください。",
     excelFail: "Excelのダウンロードに失敗しました。もう一度お試しください。",
@@ -296,7 +327,7 @@ export default function Home() {
   const t = translations[lang];
   const currentFont = fontStacks[lang];
 
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [keywordInput, setKeywordInput] = useState("");
   const [useOcr, setUseOcr] = useState(false);
   const [showContext, setShowContext] = useState(false);
@@ -309,7 +340,7 @@ export default function Home() {
   };
 
   const handleSearch = async () => {
-    if (!file) {
+    if (files.length === 0) {
       alert(t.uploadAlert);
       return;
     }
@@ -323,7 +354,11 @@ export default function Home() {
     setData(null);
 
     const formData = new FormData();
-    formData.append("file", file);
+
+    files.forEach((file) => {
+      formData.append("files", file);
+    });
+
     formData.append("keywords", keywordInput);
     formData.append("use_ocr", String(useOcr));
     formData.append("show_context", String(showContext));
@@ -464,22 +499,10 @@ export default function Home() {
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Feature
-              text={t.featureLocate}
-              icon={<Search className="h-4 w-4" />}
-            />
-            <Feature
-              text={t.featureOcr}
-              icon={<FileText className="h-4 w-4" />}
-            />
-            <Feature
-              text={t.featureStats}
-              icon={<BarChart3 className="h-4 w-4" />}
-            />
-            <Feature
-              text={t.featureExport}
-              icon={<Download className="h-4 w-4" />}
-            />
+            <Feature text={t.featureLocate} icon={<Search className="h-4 w-4" />} />
+            <Feature text={t.featureOcr} icon={<FileText className="h-4 w-4" />} />
+            <Feature text={t.featureStats} icon={<BarChart3 className="h-4 w-4" />} />
+            <Feature text={t.featureExport} icon={<Download className="h-4 w-4" />} />
           </div>
         </header>
 
@@ -499,12 +522,11 @@ export default function Home() {
               <input
                 type="file"
                 accept="application/pdf"
+                multiple
                 className="hidden"
                 onChange={(e) => {
-                  const selected = e.target.files?.[0];
-                  if (selected) {
-                    setFile(selected);
-                  }
+                  const selected = Array.from(e.target.files || []);
+                  setFiles(selected);
                 }}
               />
 
@@ -512,9 +534,17 @@ export default function Home() {
                 {t.uploadButton}
               </div>
 
-              {file && (
-                <div className="mt-5 rounded-full bg-[#edf7eb] px-5 py-2 text-sm font-bold text-[#2f6b4f]">
-                  {t.selected}: {file.name}
+              {files.length > 0 && (
+                <div className="mt-5 max-w-2xl rounded-3xl bg-[#edf7eb] px-5 py-3 text-sm font-bold text-[#2f6b4f]">
+                  <div className="mb-2">
+                    {t.selected}: {files.length}
+                  </div>
+                  <div className="space-y-1 text-left">
+                    {files.slice(0, 8).map((file, index) => (
+                      <div key={index}>• {file.name}</div>
+                    ))}
+                    {files.length > 8 && <div>• ...</div>}
+                  </div>
                 </div>
               )}
             </label>
@@ -597,12 +627,35 @@ export default function Home() {
               </h2>
 
               <div className="grid gap-4 md:grid-cols-3">
-                <InfoBox title={t.filename} value={data.filename} />
-                <InfoBox title={t.pages} value={String(data.pages)} />
-                <InfoBox
-                  title={t.matchedResults}
-                  value={String(data.total_results)}
-                />
+                <InfoBox title={t.totalFiles} value={String(data.total_files)} />
+                <InfoBox title={t.totalPages} value={String(data.total_pages)} />
+                <InfoBox title={t.matchedResults} value={String(data.total_results)} />
+              </div>
+            </div>
+
+            <div className="rounded-3xl bg-white p-8 shadow-xl">
+              <h2 className="mb-6 text-3xl font-black text-[#2f6b4f]">
+                {t.fileSummary}
+              </h2>
+
+              <div className="space-y-4">
+                {data.file_summaries.map((file, index) => (
+                  <div
+                    key={index}
+                    className="rounded-2xl border border-[#d8e7d3] bg-[#f9fcf7] p-5"
+                  >
+                    <div className="text-lg font-black text-[#2f6b4f]">
+                      {file.pdf_name}
+                    </div>
+                    <div className="mt-3 text-sm leading-7 text-[#6b7f71]">
+                      {t.totalPages}: <b>{file.pages}</b>
+                      <br />
+                      {t.matchedResults}: <b>{file.total_results}</b>
+                      <br />
+                      {t.pdfTotalChars}: <b>{file.total_chars}</b>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -655,23 +708,32 @@ export default function Home() {
                       key={index}
                       className="rounded-2xl border border-[#dce8d7] bg-[#fbfcf7] p-6"
                     >
-                      <div className="mb-3 flex flex-wrap items-center gap-3">
-                        <span className="rounded-full bg-[#edf7eb] px-4 py-2 text-sm font-bold text-[#2f6b4f]">
-                          {t.page} {item.page}
-                        </span>
-
-                        <span className="rounded-full bg-[#dff0dc] px-4 py-2 text-sm font-bold text-[#2f6b4f]">
-                          {item.keyword}
-                        </span>
-
-                        <span className="rounded-full bg-white px-4 py-2 text-sm font-bold text-[#6b7f71]">
-                          {t.method}: {item.method}
-                        </span>
+                      <div className="mb-4 grid gap-3 md:grid-cols-4">
+                        <InfoPill title={t.pdfName} value={item.pdf_name} />
+                        <InfoPill title={t.keyword} value={item.keyword} />
+                        <InfoPill title={t.pageNumber} value={String(item.page_number)} />
+                        <InfoPill title={t.method} value={item.method} />
                       </div>
 
-                      <div className="text-base leading-8 text-[#425347]">
-                        {item.context}
+                      <div className="rounded-2xl bg-white p-5">
+                        <div className="mb-2 text-sm font-black text-[#2f6b4f]">
+                          {t.sentence}
+                        </div>
+                        <div className="text-base leading-8 text-[#425347]">
+                          {item.matched_sentence}
+                        </div>
                       </div>
+
+                      {showContext && (
+                        <div className="mt-4 rounded-2xl bg-[#f3f8ef] p-5">
+                          <div className="mb-2 text-sm font-black text-[#2f6b4f]">
+                            {t.context}
+                          </div>
+                          <div className="text-base leading-8 text-[#425347]">
+                            {item.context}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -683,7 +745,7 @@ export default function Home() {
         <footer className="mt-14 border-t border-[#8bb184]/25 pt-7 text-center text-sm text-[#7d8f82]">
           <div>© 2026 springtool. Designed with 🌿 for research.</div>
           <div className="mt-2">
-            {t.developer}: 5G1 · {t.contact}: springtools@gmail.com
+            {t.developer}: 5G1 · {t.contact}: your-email@example.com
           </div>
         </footer>
       </section>
@@ -752,7 +814,6 @@ function OptionCard({
       }`}
     >
       <div className="font-black text-[#2f6b4f]">{title}</div>
-
       <div className="mt-2 text-sm text-[#6b7f71]">{desc}</div>
     </button>
   );
@@ -764,6 +825,17 @@ function InfoBox({ title, value }: { title: string; value: string }) {
       <div className="text-sm text-[#7d8f82]">{title}</div>
 
       <div className="mt-2 break-words text-2xl font-black text-[#2f6b4f]">
+        {value}
+      </div>
+    </div>
+  );
+}
+
+function InfoPill({ title, value }: { title: string; value: string }) {
+  return (
+    <div className="rounded-2xl bg-white px-4 py-3 shadow-sm">
+      <div className="text-xs font-bold text-[#7d8f82]">{title}</div>
+      <div className="mt-1 break-words text-sm font-black text-[#2f6b4f]">
         {value}
       </div>
     </div>
