@@ -66,7 +66,8 @@ const translations = {
 
     uploadTitle: "Upload PDF Files",
     uploadDesc: "Click or drag multiple PDF files here",
-    uploadSubDesc: "Multiple PDF files supported",
+    uploadSubDesc:
+      "Multiple PDF files supported. Recommended total size: up to 500MB",
     uploadButton: "Select PDF Files",
     selected: "Selected files",
 
@@ -76,7 +77,8 @@ const translations = {
 
     optionTitle: "Search Options",
     enableOcr: "Enable OCR for scanned PDFs",
-    enableOcrDesc: "For scanned or image-based PDFs",
+    enableOcrDesc:
+      "For scanned or image-based PDFs. Large scanned PDFs may take longer.",
     showContext: "Show surrounding context",
     showContextDesc: "Display context around matched sentences",
 
@@ -111,7 +113,8 @@ const translations = {
 
     uploadAlert: "Please upload at least one PDF file.",
     keywordAlert: "Please enter at least one keyword.",
-    backendAlert: "Backend connection failed. Please check if FastAPI is running.",
+    backendAlert:
+      "Backend connection failed. Please check if FastAPI is running.",
     excelFail: "Excel download failed. Please try again.",
     wordFail: "Word download failed. Please try again.",
     noResult: "No matched sentences found.",
@@ -119,6 +122,7 @@ const translations = {
     developer: "Developer",
     contact: "Contact",
   },
+
   zh: {
     badge: "森林风格学术研究工具",
     title: "springtool",
@@ -130,7 +134,7 @@ const translations = {
 
     uploadTitle: "上传 PDF 文件",
     uploadDesc: "点击或拖拽多个 PDF 文件到此处",
-    uploadSubDesc: "支持多个 PDF 文件上传",
+    uploadSubDesc: "支持多个 PDF 文件上传，建议总大小不超过 500MB",
     uploadButton: "选择 PDF 文件",
     selected: "已选择文件",
 
@@ -140,7 +144,7 @@ const translations = {
 
     optionTitle: "搜索选项",
     enableOcr: "启用 OCR 识别扫描版 PDF",
-    enableOcrDesc: "适用于扫描版或图片版 PDF",
+    enableOcrDesc: "适用于扫描版或图片版 PDF，大型扫描 PDF 可能需要更长时间。",
     showContext: "显示前后句上下文",
     showContextDesc: "展示匹配句子的上下文内容",
 
@@ -183,6 +187,7 @@ const translations = {
     developer: "开发者",
     contact: "联系方式",
   },
+
   ko: {
     badge: "숲 감성 학술 연구 도구",
     title: "springtool",
@@ -195,7 +200,7 @@ const translations = {
 
     uploadTitle: "PDF 파일 업로드",
     uploadDesc: "여러 PDF 파일을 클릭하거나 드래그하세요",
-    uploadSubDesc: "여러 개의 PDF 파일을 지원합니다",
+    uploadSubDesc: "여러 개의 PDF 파일을 지원합니다. 권장 총 용량 최대 500MB",
     uploadButton: "PDF 파일 선택",
     selected: "선택된 파일",
 
@@ -205,7 +210,8 @@ const translations = {
 
     optionTitle: "검색 옵션",
     enableOcr: "스캔 PDF OCR 인식",
-    enableOcrDesc: "스캔본 또는 이미지형 PDF에 사용",
+    enableOcrDesc:
+      "스캔본 또는 이미지형 PDF에 사용합니다. 대용량 스캔 PDF는 시간이 오래 걸릴 수 있습니다.",
     showContext: "앞뒤 문장 표시",
     showContextDesc: "매칭 문장의 주변 문맥 표시",
 
@@ -248,6 +254,7 @@ const translations = {
     developer: "개발자",
     contact: "연락처",
   },
+
   ja: {
     badge: "森を感じる学術研究ツール",
     title: "springtool",
@@ -260,7 +267,7 @@ const translations = {
 
     uploadTitle: "PDFファイルをアップロード",
     uploadDesc: "複数のPDFファイルをクリックまたはドラッグ",
-    uploadSubDesc: "複数のPDFファイルに対応",
+    uploadSubDesc: "複数のPDFファイルに対応。推奨合計サイズは最大500MB",
     uploadButton: "PDFファイルを選択",
     selected: "選択済みファイル",
 
@@ -270,7 +277,8 @@ const translations = {
 
     optionTitle: "検索オプション",
     enableOcr: "スキャンPDFのOCR認識",
-    enableOcrDesc: "スキャン版または画像PDF向け",
+    enableOcrDesc:
+      "スキャン版または画像PDF向け。大容量のスキャンPDFは時間がかかる場合があります。",
     showContext: "前後の文脈を表示",
     showContextDesc: "一致した文の前後文脈を表示",
 
@@ -499,10 +507,22 @@ export default function Home() {
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Feature text={t.featureLocate} icon={<Search className="h-4 w-4" />} />
-            <Feature text={t.featureOcr} icon={<FileText className="h-4 w-4" />} />
-            <Feature text={t.featureStats} icon={<BarChart3 className="h-4 w-4" />} />
-            <Feature text={t.featureExport} icon={<Download className="h-4 w-4" />} />
+            <Feature
+              text={t.featureLocate}
+              icon={<Search className="h-4 w-4" />}
+            />
+            <Feature
+              text={t.featureOcr}
+              icon={<FileText className="h-4 w-4" />}
+            />
+            <Feature
+              text={t.featureStats}
+              icon={<BarChart3 className="h-4 w-4" />}
+            />
+            <Feature
+              text={t.featureExport}
+              icon={<Download className="h-4 w-4" />}
+            />
           </div>
         </header>
 
@@ -629,7 +649,10 @@ export default function Home() {
               <div className="grid gap-4 md:grid-cols-3">
                 <InfoBox title={t.totalFiles} value={String(data.total_files)} />
                 <InfoBox title={t.totalPages} value={String(data.total_pages)} />
-                <InfoBox title={t.matchedResults} value={String(data.total_results)} />
+                <InfoBox
+                  title={t.matchedResults}
+                  value={String(data.total_results)}
+                />
               </div>
             </div>
 
@@ -711,7 +734,10 @@ export default function Home() {
                       <div className="mb-4 grid gap-3 md:grid-cols-4">
                         <InfoPill title={t.pdfName} value={item.pdf_name} />
                         <InfoPill title={t.keyword} value={item.keyword} />
-                        <InfoPill title={t.pageNumber} value={String(item.page_number)} />
+                        <InfoPill
+                          title={t.pageNumber}
+                          value={String(item.page_number)}
+                        />
                         <InfoPill title={t.method} value={item.method} />
                       </div>
 
