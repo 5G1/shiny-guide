@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
+import GoogleAnalytics from "./components/GoogleAnalytics";
 import "./globals.css";
 
+const siteUrl = "https://springtool.vercel.app";
+const gaMeasurementId = "G-YSSDVEX42E";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://springtool.vercel.app"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "PDF Keyword Search Tool by springtool",
     template: "%s | springtool",
@@ -25,7 +29,7 @@ export const metadata: Metadata = {
     title: "PDF Keyword Search Tool by springtool",
     description:
       "Upload multiple PDF files, search keywords, and extract matched sentences with PDF names and page numbers.",
-    url: "https://springtool.vercel.app/en",
+    url: `${siteUrl}/en`,
     siteName: "springtool",
     type: "website",
   },
@@ -47,7 +51,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <GoogleAnalytics measurementId={gaMeasurementId} />
+        {children}
+      </body>
     </html>
   );
 }
