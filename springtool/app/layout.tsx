@@ -18,6 +18,9 @@ export const metadata: Metadata = {
     "PDF sentence extractor",
     "PDF page finder",
   ],
+  verification: {
+    google: "YVhBUPtcbOHfC297IDpTwl5AEoXu5IQaqXf7RvJoa70",
+  },
   openGraph: {
     title: "PDF Keyword Search Tool by springtool",
     description:
