@@ -3,8 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | springtool",
-  description:
-    "Privacy Policy for springtool PDF Keyword Search Tool.",
+  description: "Privacy Policy for springtool PDF Keyword Search Tool.",
 };
 
 export default function PrivacyPage() {
@@ -20,16 +19,16 @@ export default function PrivacyPage() {
         </h1>
 
         <p className="mt-6 text-sm text-[#7d8f82]">
-          Last updated: May 29, 2026
+          Last updated: June 1, 2026
         </p>
 
         <h2 className="mt-8 text-2xl font-black text-[#2f6b4f]">
           1. Overview
         </h2>
         <p className="mt-3 leading-8 text-[#52695a]">
-          springtool is a PDF keyword search tool. Users can upload PDF files,
-          search keywords, and export search results. We aim to keep the service
-          simple and transparent.
+          springtool is a PDF keyword search tool operated by 스프링툴바.
+          Users can upload PDF files, search keywords, and export search
+          results. We aim to keep the service simple and transparent.
         </p>
 
         <h2 className="mt-8 text-2xl font-black text-[#2f6b4f]">
@@ -50,10 +49,21 @@ export default function PrivacyPage() {
           <li>Keywords entered by users</li>
           <li>Search results generated from uploaded files</li>
           <li>Basic technical information such as request logs</li>
+          <li>Analytics data such as page views, traffic sources, and usage events</li>
         </ul>
 
         <h2 className="mt-8 text-2xl font-black text-[#2f6b4f]">
-          4. Cookies and Advertising
+          4. Analytics
+        </h2>
+        <p className="mt-3 leading-8 text-[#52695a]">
+          We may use Google Analytics to understand how users interact with the
+          service, including visited pages, general location information, device
+          category, and traffic sources. This helps us improve the service and
+          user experience.
+        </p>
+
+        <h2 className="mt-8 text-2xl font-black text-[#2f6b4f]">
+          5. Cookies and Advertising
         </h2>
         <p className="mt-3 leading-8 text-[#52695a]">
           If advertisements are enabled in the future, third-party vendors,
@@ -63,12 +73,14 @@ export default function PrivacyPage() {
         </p>
 
         <h2 className="mt-8 text-2xl font-black text-[#2f6b4f]">
-          5. Contact
+          6. Contact
         </h2>
         <p className="mt-3 leading-8 text-[#52695a]">
           If you have questions about this Privacy Policy, please contact:
           <br />
-          your-email@example.com
+          스프링툴바
+          <br />
+          springtoolbar@gmail.com
         </p>
       </section>
     </main>

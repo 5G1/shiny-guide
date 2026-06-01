@@ -3,8 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Terms of Use | springtool",
-  description:
-    "Terms of Use for springtool PDF Keyword Search Tool.",
+  description: "Terms of Use for springtool PDF Keyword Search Tool.",
 };
 
 export default function TermsPage() {
@@ -20,7 +19,7 @@ export default function TermsPage() {
         </h1>
 
         <p className="mt-6 text-sm text-[#7d8f82]">
-          Last updated: May 29, 2026
+          Last updated: June 1, 2026
         </p>
 
         <h2 className="mt-8 text-2xl font-black text-[#2f6b4f]">
@@ -67,10 +66,12 @@ export default function TermsPage() {
         </p>
 
         <h2 className="mt-8 text-2xl font-black text-[#2f6b4f]">
-          6. Contact
+          6. Operator
         </h2>
         <p className="mt-3 leading-8 text-[#52695a]">
-          Contact: your-email@example.com
+          Operator / Developer: 스프링툴바
+          <br />
+          Contact: springtoolbar@gmail.com
         </p>
       </section>
     </main>

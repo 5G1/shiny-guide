@@ -334,6 +334,9 @@ const fontStacks = {
   ja: "'Hiragino Sans', 'Yu Gothic', 'Noto Sans JP', 'Meiryo', sans-serif",
 };
 
+const developerName = "스프링툴바";
+const developerEmail = "springtoolbar@gmail.com";
+
 export default function PdfKeywordTool({
   defaultLang = "en",
 }: {
@@ -784,16 +787,26 @@ export default function PdfKeywordTool({
 
         <footer className="mt-14 border-t border-[#8bb184]/25 pt-7 text-center text-sm text-[#7d8f82]">
           <div className="mb-4 flex flex-wrap justify-center gap-4 font-bold text-[#2f6b4f]">
-            <a href="/about" className="hover:underline">About</a>
-            <a href="/how-to-use" className="hover:underline">How to Use</a>
-            <a href="/privacy" className="hover:underline">Privacy Policy</a>
-            <a href="/terms" className="hover:underline">Terms of Use</a>
-            <a href="/contact" className="hover:underline">Contact</a>
+            <a href="/about" className="hover:underline">
+              About
+            </a>
+            <a href="/how-to-use" className="hover:underline">
+              How to Use
+            </a>
+            <a href="/privacy" className="hover:underline">
+              Privacy Policy
+            </a>
+            <a href="/terms" className="hover:underline">
+              Terms of Use
+            </a>
+            <a href="/contact" className="hover:underline">
+              Contact
+            </a>
           </div>
 
-          <div>© 2026 springtool. Designed with 🌿 for research.</div>
+          <div>© 2026 springtool. Operated by {developerName}.</div>
           <div className="mt-2">
-            {t.developer}: 5G1 · {t.contact}: your-email@example.com
+            {t.developer}: {developerName} · {t.contact}: {developerEmail}
           </div>
         </footer>
       </section>

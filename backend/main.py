@@ -31,8 +31,8 @@ if os.path.exists(WINDOWS_TESSERACT_PATH):
     pytesseract.pytesseract.tesseract_cmd = WINDOWS_TESSERACT_PATH
 
 
-DEVELOPER_NAME = "5G1"
-DEVELOPER_CONTACT = "your-email@example.com"
+DEVELOPER_NAME = "스프링툴바"
+DEVELOPER_CONTACT = "springtoolbar@gmail.com"
 
 
 @app.get("/")
@@ -328,7 +328,7 @@ async def export_excel(payload: ExportPayload):
             {"Item": "Total Pages", "Value": payload.total_pages},
             {"Item": "Matched Results", "Value": payload.total_results},
             {"Item": "Keywords", "Value": ", ".join(payload.keywords)},
-            {"Item": "Developer", "Value": DEVELOPER_NAME},
+            {"Item": "Operator / Developer", "Value": DEVELOPER_NAME},
             {"Item": "Contact", "Value": DEVELOPER_CONTACT},
         ]
     )
@@ -379,7 +379,7 @@ async def export_word(payload: ExportPayload):
     document.add_paragraph(f"Total Pages: {payload.total_pages}")
     document.add_paragraph(f"Matched Results: {payload.total_results}")
     document.add_paragraph(f"Keywords: {', '.join(payload.keywords)}")
-    document.add_paragraph(f"Developer: {DEVELOPER_NAME}")
+    document.add_paragraph(f"Operator / Developer: {DEVELOPER_NAME}")
     document.add_paragraph(f"Contact: {DEVELOPER_CONTACT}")
 
     document.add_heading("File Summary", level=2)

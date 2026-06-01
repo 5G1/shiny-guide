@@ -45,13 +45,13 @@ export default function AboutPage() {
         </ul>
 
         <h2 className="mt-10 text-2xl font-black text-[#2f6b4f]">
-          Developer
+          Operator Information
         </h2>
 
         <p className="mt-4 text-lg leading-8 text-[#52695a]">
-          Developer: 5G1
+          Operator / Developer: 스프링툴바
           <br />
-          Contact: your-email@example.com
+          Contact: springtoolbar@gmail.com
         </p>
       </section>
     </main>

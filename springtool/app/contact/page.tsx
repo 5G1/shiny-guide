@@ -3,8 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Contact | springtool",
-  description:
-    "Contact the developer of springtool PDF Keyword Search Tool.",
+  description: "Contact the developer of springtool PDF Keyword Search Tool.",
 };
 
 export default function ContactPage() {
@@ -15,30 +14,28 @@ export default function ContactPage() {
           ← Back to PDF Keyword Search Tool
         </Link>
 
-        <h1 className="mt-6 text-4xl font-black text-[#1f4f3a]">
-          Contact
-        </h1>
+        <h1 className="mt-6 text-4xl font-black text-[#1f4f3a]">Contact</h1>
 
         <p className="mt-6 text-lg leading-8 text-[#52695a]">
           If you have feedback, bug reports, feature requests, or collaboration
-          ideas, please contact the developer.
+          ideas, please contact the springtool operator.
         </p>
 
         <div className="mt-8 rounded-2xl border border-[#d8e7d3] bg-[#fbfcf7] p-6">
           <h2 className="text-2xl font-black text-[#2f6b4f]">
-            Developer Information
+            Operator Information
           </h2>
 
           <p className="mt-4 leading-8 text-[#52695a]">
-            Developer: 5G1
+            Operator / Developer: 스프링툴바
             <br />
-            Email: your-email@example.com
+            Email: springtoolbar@gmail.com
           </p>
         </div>
 
         <p className="mt-6 text-sm leading-7 text-[#7d8f82]">
-          Please replace the email address with your real contact email before
-          public promotion or AdSense application.
+          We welcome feedback from researchers, students, professionals, and
+          anyone who uses PDF documents frequently.
         </p>
       </section>
     </main>
