@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import GoogleAnalytics from "./components/GoogleAnalytics";
 import "./globals.css";
 
 const siteUrl = "https://springtool.vercel.app";
 const gaMeasurementId = "G-YSSDVEX42E";
+const adsensePublisherId = "ca-pub-5695613713640441";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -52,7 +54,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <Script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsensePublisherId}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+
         <GoogleAnalytics measurementId={gaMeasurementId} />
+
         {children}
       </body>
     </html>
