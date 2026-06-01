@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 
+Sitemap: https://springtool.vercel.app/sitemap_index.xml
 Sitemap: https://springtool.vercel.app/sitemap.xml
