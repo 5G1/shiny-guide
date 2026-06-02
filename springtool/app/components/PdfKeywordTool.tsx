@@ -9,6 +9,8 @@ import {
   Download,
   Leaf,
   Sparkles,
+  CheckCircle2,
+  HelpCircle,
 } from "lucide-react";
 
 type Lang = "en" | "zh" | "ko" | "ja";
@@ -53,24 +55,28 @@ type ApiResponse = {
   contact: string;
 };
 
+const MAX_FILES = 10;
+
 const translations = {
   en: {
     badge: "Forest-inspired academic research tool",
     title: "PDF Keyword Search Tool",
     brand: "by springtool",
     description:
-      "Upload multiple PDFs, search keywords, and extract matched sentences with PDF names and page numbers.",
+      "Upload up to 10 PDFs, search multiple keywords, and extract matched sentences with PDF names and page numbers.",
     featureLocate: "Precise keyword locating",
     featureOcr: "OCR support",
     featureStats: "Keyword statistics",
     featureExport: "Export results",
 
     uploadTitle: "Upload PDF Files",
-    uploadDesc: "Click or drag multiple PDF files here",
+    uploadDesc: "Click or drag up to 10 PDF files here",
     uploadSubDesc:
-      "Multiple PDF files supported. Recommended total size: up to 500MB",
+      "Up to 10 PDF files supported. Recommended total size: up to 500MB",
     uploadButton: "Select PDF Files",
     selected: "Selected files",
+    maxFiles: "Maximum 10 PDF files can be uploaded at once.",
+    selectedLimit: "Selected files",
 
     keywordTitle: "Enter Keywords",
     keywordPlaceholder: "Enter keywords, separated by commas",
@@ -120,6 +126,51 @@ const translations = {
     wordFail: "Word download failed. Please try again.",
     noResult: "No matched sentences found.",
 
+    seoTitle: "Search Keywords Across Multiple PDF Files",
+    seoDesc:
+      "springtool helps researchers, students, and professionals search keywords across up to 10 PDF files at once. It extracts matched sentences, PDF names, page numbers, keyword statistics, and exportable reports.",
+    seoCards: [
+      {
+        title: "For researchers",
+        desc: "Review papers, articles, and academic references faster by locating keywords and sentences with page numbers.",
+      },
+      {
+        title: "For students",
+        desc: "Find important concepts across lecture materials, papers, and reading lists without opening each PDF one by one.",
+      },
+      {
+        title: "For professionals",
+        desc: "Search manuals, reports, proposals, and documentation across multiple PDF files in one workflow.",
+      },
+    ],
+    faqTitle: "FAQ",
+    faqs: [
+      {
+        q: "What is PDF Keyword Search Tool?",
+        a: "It is a tool that searches keywords inside PDF files and shows matched sentences with PDF names and page numbers.",
+      },
+      {
+        q: "Can I upload multiple PDF files?",
+        a: "Yes. You can upload up to 10 PDF files at once.",
+      },
+      {
+        q: "Can I search multiple keywords?",
+        a: "Yes. Enter multiple keywords separated by commas.",
+      },
+      {
+        q: "Can I find page numbers?",
+        a: "Yes. Each matched sentence includes the PDF name and page number.",
+      },
+      {
+        q: "Does it support scanned PDFs?",
+        a: "Yes. You can enable OCR for scanned or image-based PDFs.",
+      },
+      {
+        q: "Can I export the results?",
+        a: "Yes. You can export results to Excel and Word files.",
+      },
+    ],
+
     developer: "Developer",
     contact: "Contact",
   },
@@ -128,17 +179,20 @@ const translations = {
     badge: "森林风格学术研究工具",
     title: "PDF关键词搜索工具",
     brand: "by springtool",
-    description: "上传多个 PDF，输入关键词，输出 PDF 名称、页码与匹配句子。",
+    description:
+      "最多上传 10 个 PDF，输入多个关键词，并输出 PDF 名称、页码与匹配句子。",
     featureLocate: "精准定位关键词",
     featureOcr: "支持 OCR 识别",
     featureStats: "关键词统计分析",
     featureExport: "一键导出结果",
 
     uploadTitle: "上传 PDF 文件",
-    uploadDesc: "点击或拖拽多个 PDF 文件到此处",
-    uploadSubDesc: "支持多个 PDF 文件上传，建议总大小不超过 500MB",
+    uploadDesc: "点击或拖拽最多 10 个 PDF 文件到此处",
+    uploadSubDesc: "支持最多 10 个 PDF 文件上传，建议总大小不超过 500MB",
     uploadButton: "选择 PDF 文件",
     selected: "已选择文件",
+    maxFiles: "一次最多只能上传 10 个 PDF 文件。",
+    selectedLimit: "已选择文件",
 
     keywordTitle: "输入关键词",
     keywordPlaceholder: "请输入关键词，多个关键词请用逗号分隔",
@@ -186,6 +240,51 @@ const translations = {
     wordFail: "Word 下载失败，请稍后再试。",
     noResult: "没有找到匹配句子。",
 
+    seoTitle: "批量搜索多个 PDF 文件中的关键词",
+    seoDesc:
+      "springtool 可以帮助研究人员、学生和职场用户一次性搜索最多 10 个 PDF 文件，快速提取匹配句子、PDF 名称、页码、关键词统计和可导出的报告。",
+    seoCards: [
+      {
+        title: "适合研究人员",
+        desc: "快速定位论文、文章和研究资料中的关键词、句子和页码。",
+      },
+      {
+        title: "适合学生",
+        desc: "无需逐个打开 PDF，即可在课件、论文和阅读材料中查找重点概念。",
+      },
+      {
+        title: "适合职场用户",
+        desc: "可用于搜索手册、报告、方案和多份 PDF 文档资料。",
+      },
+    ],
+    faqTitle: "常见问题",
+    faqs: [
+      {
+        q: "PDF关键词搜索工具是什么？",
+        a: "这是一个可以在 PDF 文件中搜索关键词，并显示 PDF 名称、页码和匹配句子的工具。",
+      },
+      {
+        q: "可以上传多个 PDF 文件吗？",
+        a: "可以。一次最多支持上传 10 个 PDF 文件。",
+      },
+      {
+        q: "可以搜索多个关键词吗？",
+        a: "可以。多个关键词请用逗号分隔。",
+      },
+      {
+        q: "可以显示页码吗？",
+        a: "可以。每条匹配结果都会显示 PDF 名称和页码。",
+      },
+      {
+        q: "支持扫描版 PDF 吗？",
+        a: "支持。可以启用 OCR 来识别扫描版或图片版 PDF。",
+      },
+      {
+        q: "结果可以导出吗？",
+        a: "可以。结果支持导出为 Excel 和 Word 文件。",
+      },
+    ],
+
     developer: "开发者",
     contact: "联系方式",
   },
@@ -195,17 +294,20 @@ const translations = {
     title: "PDF 키워드 검색 도구",
     brand: "by springtool",
     description:
-      "여러 PDF를 업로드하고 키워드를 검색하여 PDF명, 페이지 번호, 매칭 문장을 함께 확인합니다.",
+      "최대 10개의 PDF를 업로드하고 여러 키워드를 검색하여 PDF명, 페이지 번호, 매칭 문장을 함께 확인합니다.",
     featureLocate: "키워드 정밀 검색",
     featureOcr: "OCR 지원",
     featureStats: "키워드 통계 분석",
     featureExport: "결과 내보내기",
 
     uploadTitle: "PDF 파일 업로드",
-    uploadDesc: "여러 PDF 파일을 클릭하거나 드래그하세요",
-    uploadSubDesc: "여러 개의 PDF 파일을 지원합니다. 권장 총 용량 최대 500MB",
+    uploadDesc: "최대 10개의 PDF 파일을 클릭하거나 드래그하세요",
+    uploadSubDesc:
+      "최대 10개의 PDF 파일을 지원합니다. 권장 총 용량 최대 500MB",
     uploadButton: "PDF 파일 선택",
     selected: "선택된 파일",
+    maxFiles: "PDF 파일은 한 번에 최대 10개까지 업로드할 수 있습니다.",
+    selectedLimit: "선택된 파일",
 
     keywordTitle: "키워드 입력",
     keywordPlaceholder: "키워드를 입력하세요. 여러 개는 쉼표로 구분",
@@ -254,6 +356,51 @@ const translations = {
     wordFail: "Word 다운로드에 실패했습니다. 다시 시도해주세요.",
     noResult: "매칭된 문장이 없습니다.",
 
+    seoTitle: "여러 PDF에서 키워드와 페이지 번호를 한 번에 검색하세요",
+    seoDesc:
+      "springtool은 연구자, 학생, 직장인이 최대 10개의 PDF 파일에서 키워드를 한 번에 검색하고, 매칭 문장과 PDF명, 페이지 번호, 키워드 통계, 내보내기용 리포트를 확인할 수 있도록 돕는 도구입니다.",
+    seoCards: [
+      {
+        title: "연구자에게 적합",
+        desc: "논문, 학술 자료, 참고문헌 속 키워드와 문장을 페이지 번호와 함께 빠르게 찾을 수 있습니다.",
+      },
+      {
+        title: "학생에게 적합",
+        desc: "강의 자료, 논문, 읽기 자료를 하나씩 열지 않고도 핵심 개념을 빠르게 찾을 수 있습니다.",
+      },
+      {
+        title: "직장인에게 적합",
+        desc: "매뉴얼, 보고서, 제안서, 문서 자료를 여러 PDF에서 한 번에 검색할 수 있습니다.",
+      },
+    ],
+    faqTitle: "자주 묻는 질문",
+    faqs: [
+      {
+        q: "PDF 키워드 검색 도구는 무엇인가요?",
+        a: "PDF 파일 안에서 키워드를 검색하고 PDF명, 페이지 번호, 매칭 문장을 함께 보여주는 도구입니다.",
+      },
+      {
+        q: "여러 PDF를 한 번에 업로드할 수 있나요?",
+        a: "네. 한 번에 최대 10개의 PDF 파일을 업로드할 수 있습니다.",
+      },
+      {
+        q: "여러 키워드를 동시에 검색할 수 있나요?",
+        a: "네. 여러 키워드는 쉼표로 구분해서 입력하면 됩니다.",
+      },
+      {
+        q: "키워드가 있는 페이지 번호도 확인할 수 있나요?",
+        a: "네. 각 매칭 결과에 PDF명과 페이지 번호가 함께 표시됩니다.",
+      },
+      {
+        q: "스캔 PDF도 지원하나요?",
+        a: "네. OCR 옵션을 켜면 스캔본 또는 이미지형 PDF를 인식할 수 있습니다.",
+      },
+      {
+        q: "결과를 파일로 저장할 수 있나요?",
+        a: "네. Excel과 Word 파일로 결과를 다운로드할 수 있습니다.",
+      },
+    ],
+
     developer: "개발자",
     contact: "연락처",
   },
@@ -263,17 +410,20 @@ const translations = {
     title: "PDFキーワード検索ツール",
     brand: "by springtool",
     description:
-      "複数のPDFからキーワードを検索し、PDF名・ページ番号・一致文章を表示します。",
+      "最大10個のPDFをアップロードし、複数キーワードを検索してPDF名・ページ番号・一致文章を表示します。",
     featureLocate: "キーワード精密検索",
     featureOcr: "OCR対応",
     featureStats: "キーワード統計分析",
     featureExport: "結果エクスポート",
 
     uploadTitle: "PDFファイルをアップロード",
-    uploadDesc: "複数のPDFファイルをクリックまたはドラッグ",
-    uploadSubDesc: "複数のPDFファイルに対応。推奨合計サイズは最大500MB",
+    uploadDesc: "最大10個のPDFファイルをクリックまたはドラッグ",
+    uploadSubDesc:
+      "最大10個のPDFファイルに対応。推奨合計サイズは最大500MB",
     uploadButton: "PDFファイルを選択",
     selected: "選択済みファイル",
+    maxFiles: "一度にアップロードできるPDFファイルは最大10個です。",
+    selectedLimit: "選択済みファイル",
 
     keywordTitle: "キーワード入力",
     keywordPlaceholder: "キーワードを入力、複数の場合はカンマで区切る",
@@ -322,6 +472,51 @@ const translations = {
     wordFail: "Wordのダウンロードに失敗しました。もう一度お試しください。",
     noResult: "一致した文がありません。",
 
+    seoTitle: "複数PDFからキーワードとページ番号を一括検索",
+    seoDesc:
+      "springtoolは、研究者・学生・ビジネスユーザーが最大10個のPDFファイルからキーワードを一括検索し、一致文章、PDF名、ページ番号、キーワード統計、エクスポート用レポートを確認できるツールです。",
+    seoCards: [
+      {
+        title: "研究者向け",
+        desc: "論文、学術資料、参考文献内のキーワードや文章をページ番号と一緒に素早く確認できます。",
+      },
+      {
+        title: "学生向け",
+        desc: "講義資料、論文、読書資料を一つずつ開かずに重要な概念を探せます。",
+      },
+      {
+        title: "ビジネスユーザー向け",
+        desc: "マニュアル、レポート、提案書など複数PDF文書を一括検索できます。",
+      },
+    ],
+    faqTitle: "よくある質問",
+    faqs: [
+      {
+        q: "PDFキーワード検索ツールとは何ですか？",
+        a: "PDFファイル内のキーワードを検索し、PDF名、ページ番号、一致文章を表示するツールです。",
+      },
+      {
+        q: "複数のPDFを一度にアップロードできますか？",
+        a: "はい。一度に最大10個のPDFファイルをアップロードできます。",
+      },
+      {
+        q: "複数キーワードを同時に検索できますか？",
+        a: "はい。複数キーワードはカンマで区切って入力してください。",
+      },
+      {
+        q: "ページ番号も確認できますか？",
+        a: "はい。各一致結果にPDF名とページ番号が表示されます。",
+      },
+      {
+        q: "スキャンPDFに対応していますか？",
+        a: "はい。OCRオプションを有効にすると、スキャン版または画像PDFを認識できます。",
+      },
+      {
+        q: "結果をエクスポートできますか？",
+        a: "はい。ExcelとWordファイルで結果をダウンロードできます。",
+      },
+    ],
+
     developer: "開発者",
     contact: "連絡先",
   },
@@ -358,9 +553,30 @@ export default function PdfKeywordTool({
     return process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
   };
 
+  const handleFileSelect = (selectedFiles: File[]) => {
+    const pdfFiles = selectedFiles.filter(
+      (file) =>
+        file.type === "application/pdf" ||
+        file.name.toLowerCase().endsWith(".pdf")
+    );
+
+    if (pdfFiles.length > MAX_FILES) {
+      alert(t.maxFiles);
+      setFiles(pdfFiles.slice(0, MAX_FILES));
+      return;
+    }
+
+    setFiles(pdfFiles);
+  };
+
   const handleSearch = async () => {
     if (files.length === 0) {
       alert(t.uploadAlert);
+      return;
+    }
+
+    if (files.length > MAX_FILES) {
+      alert(t.maxFiles);
       return;
     }
 
@@ -545,7 +761,14 @@ export default function PdfKeywordTool({
 
         <div className="space-y-6">
           <Card title={t.uploadTitle} step="1">
-            <label className="flex min-h-[260px] cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed border-[#8bb184] bg-[#fbfcf7] text-center transition hover:border-[#2f6b4f] hover:bg-white">
+            <label
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                handleFileSelect(Array.from(e.dataTransfer.files || []));
+              }}
+              className="flex min-h-[280px] cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed border-[#8bb184] bg-[#fbfcf7] text-center transition hover:border-[#2f6b4f] hover:bg-white"
+            >
               <UploadCloud className="mb-5 h-16 w-16 text-[#6fa26e]" />
 
               <div className="text-xl font-bold text-[#2f6b4f]">
@@ -563,7 +786,7 @@ export default function PdfKeywordTool({
                 className="hidden"
                 onChange={(e) => {
                   const selected = Array.from(e.target.files || []);
-                  setFiles(selected);
+                  handleFileSelect(selected);
                 }}
               />
 
@@ -572,15 +795,23 @@ export default function PdfKeywordTool({
               </div>
 
               {files.length > 0 && (
-                <div className="mt-5 max-w-2xl rounded-3xl bg-[#edf7eb] px-5 py-3 text-sm font-bold text-[#2f6b4f]">
-                  <div className="mb-2">
-                    {t.selected}: {files.length}
+                <div className="mt-5 w-full max-w-3xl rounded-3xl bg-[#edf7eb] px-5 py-4 text-sm font-bold text-[#2f6b4f]">
+                  <div className="mb-3">
+                    {t.selected}: {files.length} / {MAX_FILES}
                   </div>
-                  <div className="space-y-1 text-left">
-                    {files.slice(0, 8).map((file, index) => (
-                      <div key={index}>• {file.name}</div>
+
+                  <div className="grid gap-2 text-left md:grid-cols-2">
+                    {files.map((file, index) => (
+                      <div
+                        key={`${file.name}-${index}`}
+                        className="rounded-2xl bg-white/80 px-4 py-3"
+                      >
+                        <span className="mr-2 text-[#6fa26e]">
+                          {index + 1}.
+                        </span>
+                        {file.name}
+                      </div>
                     ))}
-                    {files.length > 8 && <div>• ...</div>}
                   </div>
                 </div>
               )}
@@ -784,6 +1015,52 @@ export default function PdfKeywordTool({
             </div>
           </section>
         )}
+
+        <section className="mt-16 rounded-3xl bg-white p-8 shadow-xl">
+          <div className="mb-4 flex items-center gap-3">
+            <CheckCircle2 className="h-7 w-7 text-[#2f6b4f]" />
+            <h2 className="text-3xl font-black text-[#2f6b4f]">
+              {t.seoTitle}
+            </h2>
+          </div>
+
+          <p className="text-lg leading-8 text-[#52695a]">{t.seoDesc}</p>
+
+          <div className="mt-8 grid gap-4 md:grid-cols-3">
+            {t.seoCards.map((card, index) => (
+              <div
+                key={index}
+                className="rounded-2xl border border-[#d8e7d3] bg-[#fbfcf7] p-5"
+              >
+                <h3 className="text-xl font-black text-[#2f6b4f]">
+                  {card.title}
+                </h3>
+                <p className="mt-3 leading-7 text-[#52695a]">{card.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-8 rounded-3xl bg-white p-8 shadow-xl">
+          <div className="mb-6 flex items-center gap-3">
+            <HelpCircle className="h-7 w-7 text-[#2f6b4f]" />
+            <h2 className="text-3xl font-black text-[#2f6b4f]">
+              {t.faqTitle}
+            </h2>
+          </div>
+
+          <div className="space-y-4">
+            {t.faqs.map((faq, index) => (
+              <div
+                key={index}
+                className="rounded-2xl border border-[#d8e7d3] bg-[#fbfcf7] p-5"
+              >
+                <h3 className="font-black text-[#2f6b4f]">{faq.q}</h3>
+                <p className="mt-2 leading-7 text-[#52695a]">{faq.a}</p>
+              </div>
+            ))}
+          </div>
+        </section>
 
         <footer className="mt-14 border-t border-[#8bb184]/25 pt-7 text-center text-sm text-[#7d8f82]">
           <div className="mb-4 flex flex-wrap justify-center gap-4 font-bold text-[#2f6b4f]">

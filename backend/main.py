@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -33,11 +33,17 @@ if os.path.exists(WINDOWS_TESSERACT_PATH):
 
 DEVELOPER_NAME = "스프링툴바"
 DEVELOPER_CONTACT = "springtoolbar@gmail.com"
+MAX_FILES = 10
 
 
 @app.get("/")
 def home():
-    return {"message": "Springtool Backend Running"}
+    return {
+        "message": "Springtool Backend Running",
+        "max_files": MAX_FILES,
+        "developer": DEVELOPER_NAME,
+        "contact": DEVELOPER_CONTACT,
+    }
 
 
 def split_sentences(text: str):
@@ -180,7 +186,26 @@ async def search_pdf(
     use_ocr: str = Form("false"),
     show_context: str = Form("false"),
 ):
+    if not files:
+        raise HTTPException(status_code=400, detail="At least one PDF file is required.")
+
+    if len(files) > MAX_FILES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Maximum {MAX_FILES} PDF files can be uploaded at once.",
+        )
+
+    for file in files:
+        if not file.filename.lower().endswith(".pdf"):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Only PDF files are supported: {file.filename}",
+            )
+
     keyword_list = clean_keywords(keywords)
+
+    if not keyword_list:
+        raise HTTPException(status_code=400, detail="At least one keyword is required.")
 
     use_ocr_bool = use_ocr == "true"
     show_context_bool = show_context == "true"
@@ -205,42 +230,55 @@ async def search_pdf(
     for file in files:
         contents = await file.read()
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp:
-            temp.write(contents)
-            temp_path = temp.name
+        if not contents:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Uploaded file is empty: {file.filename}",
+            )
 
-        analyzed = analyze_pdf_file(
-            file_name=file.filename,
-            pdf_path=temp_path,
-            keywords=keyword_list,
-            use_ocr=use_ocr_bool,
-            show_context=show_context_bool,
-        )
-
-        file_summaries.append(
-            {
-                "pdf_name": analyzed["pdf_name"],
-                "pages": analyzed["pages"],
-                "total_results": analyzed["total_results"],
-                "total_chars": analyzed["total_chars"],
-            }
-        )
-
-        total_pages += analyzed["pages"]
-        global_total_chars += analyzed["total_chars"]
-        all_results.extend(analyzed["results"])
-        all_stats.extend(analyzed["stats"])
-        all_logs.extend(analyzed["logs"])
-
-        for stat in analyzed["stats"]:
-            keyword = stat["keyword"]
-            global_keyword_stats[keyword]["count"] += stat["count"]
-            global_keyword_stats[keyword]["total_keyword_chars"] += stat["total_keyword_chars"]
+        temp_path = None
 
         try:
-            os.remove(temp_path)
-        except Exception:
-            pass
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp:
+                temp.write(contents)
+                temp_path = temp.name
+
+            analyzed = analyze_pdf_file(
+                file_name=file.filename,
+                pdf_path=temp_path,
+                keywords=keyword_list,
+                use_ocr=use_ocr_bool,
+                show_context=show_context_bool,
+            )
+
+            file_summaries.append(
+                {
+                    "pdf_name": analyzed["pdf_name"],
+                    "pages": analyzed["pages"],
+                    "total_results": analyzed["total_results"],
+                    "total_chars": analyzed["total_chars"],
+                }
+            )
+
+            total_pages += analyzed["pages"]
+            global_total_chars += analyzed["total_chars"]
+            all_results.extend(analyzed["results"])
+            all_stats.extend(analyzed["stats"])
+            all_logs.extend(analyzed["logs"])
+
+            for stat in analyzed["stats"]:
+                keyword = stat["keyword"]
+                global_keyword_stats[keyword]["count"] += stat["count"]
+                global_keyword_stats[keyword]["total_keyword_chars"] += stat[
+                    "total_keyword_chars"
+                ]
+
+        finally:
+            if temp_path:
+                try:
+                    os.remove(temp_path)
+                except Exception:
+                    pass
 
     global_stats = []
     for keyword, stat in global_keyword_stats.items():
