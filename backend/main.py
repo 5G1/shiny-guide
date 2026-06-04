@@ -33,7 +33,7 @@ if os.path.exists(WINDOWS_TESSERACT_PATH):
 
 DEVELOPER_NAME = "스프링툴바"
 DEVELOPER_CONTACT = "springtoolbar@gmail.com"
-MAX_FILES = 10
+MAX_FILES = 30
 
 
 @app.get("/")
@@ -91,93 +91,102 @@ def analyze_pdf_file(
         for keyword in keywords
     }
 
-    for page_index in range(len(doc)):
-        page = doc[page_index]
-        page_number = page_index + 1
+    try:
+        for page_index in range(len(doc)):
+            page = doc[page_index]
+            page_number = page_index + 1
 
-        text = page.get_text()
-        extraction_method = "Text extraction"
+            text = page.get_text()
+            extraction_method = "Text extraction"
 
-        if not text.strip() and use_ocr:
-            text = ocr_page_with_pymupdf(page)
-            extraction_method = "OCR" if text.strip() else "OCR unavailable or no text found"
-        elif not text.strip():
-            extraction_method = "No text"
+            if not text.strip() and use_ocr:
+                text = ocr_page_with_pymupdf(page)
+                extraction_method = "OCR" if text.strip() else "OCR unavailable or no text found"
+            elif not text.strip():
+                extraction_method = "No text"
 
-        file_total_text += text
+            file_total_text += text
 
-        file_logs.append(
-            {
-                "pdf_name": file_name,
-                "page_number": page_number,
-                "method": extraction_method,
-                "text_length": len(clean_text_for_count(text)),
-            }
-        )
+            file_logs.append(
+                {
+                    "pdf_name": file_name,
+                    "page_number": page_number,
+                    "method": extraction_method,
+                    "text_length": len(clean_text_for_count(text)),
+                }
+            )
 
-        sentences = split_sentences(text)
+            sentences = split_sentences(text)
 
-        for keyword in keywords:
-            keyword_stats[keyword]["count"] += text.count(keyword)
-
-        for sentence_index, sentence in enumerate(sentences):
             for keyword in keywords:
-                if keyword in sentence:
-                    if show_context:
-                        previous_sentence = sentences[sentence_index - 1] if sentence_index > 0 else ""
-                        next_sentence = (
-                            sentences[sentence_index + 1]
-                            if sentence_index < len(sentences) - 1
-                            else ""
+                keyword_stats[keyword]["count"] += text.count(keyword)
+
+            for sentence_index, sentence in enumerate(sentences):
+                for keyword in keywords:
+                    if keyword in sentence:
+                        if show_context:
+                            previous_sentence = (
+                                sentences[sentence_index - 1]
+                                if sentence_index > 0
+                                else ""
+                            )
+                            next_sentence = (
+                                sentences[sentence_index + 1]
+                                if sentence_index < len(sentences) - 1
+                                else ""
+                            )
+                            context = f"{previous_sentence} {sentence} {next_sentence}".strip()
+                        else:
+                            context = sentence
+
+                        file_results.append(
+                            {
+                                "pdf_name": file_name,
+                                "keyword": keyword,
+                                "page_number": page_number,
+                                "matched_sentence": sentence,
+                                "context": context,
+                                "method": extraction_method,
+                            }
                         )
-                        context = f"{previous_sentence} {sentence} {next_sentence}".strip()
-                    else:
-                        context = sentence
 
-                    file_results.append(
-                        {
-                            "pdf_name": file_name,
-                            "keyword": keyword,
-                            "page_number": page_number,
-                            "matched_sentence": sentence,
-                            "context": context,
-                            "method": extraction_method,
-                        }
-                    )
+        file_total_chars = len(clean_text_for_count(file_total_text))
 
-    file_total_chars = len(clean_text_for_count(file_total_text))
+        file_stats = []
+        for keyword, stat in keyword_stats.items():
+            total_keyword_chars = stat["count"] * stat["keyword_length"]
+            ratio = (
+                total_keyword_chars / file_total_chars * 100
+                if file_total_chars > 0
+                else 0
+            )
 
-    file_stats = []
-    for keyword, stat in keyword_stats.items():
-        total_keyword_chars = stat["count"] * stat["keyword_length"]
-        ratio = (
-            total_keyword_chars / file_total_chars * 100
-            if file_total_chars > 0
-            else 0
-        )
+            file_stats.append(
+                {
+                    "pdf_name": file_name,
+                    "keyword": keyword,
+                    "count": stat["count"],
+                    "keyword_length": stat["keyword_length"],
+                    "total_keyword_chars": total_keyword_chars,
+                    "pdf_total_chars": file_total_chars,
+                    "ratio": f"{ratio:.4f}%",
+                }
+            )
 
-        file_stats.append(
-            {
-                "pdf_name": file_name,
-                "keyword": keyword,
-                "count": stat["count"],
-                "keyword_length": stat["keyword_length"],
-                "total_keyword_chars": total_keyword_chars,
-                "pdf_total_chars": file_total_chars,
-                "ratio": f"{ratio:.4f}%",
-            }
-        )
+        page_count = len(doc)
 
-    return {
-        "pdf_name": file_name,
-        "pages": len(doc),
-        "total_results": len(file_results),
-        "total_chars": file_total_chars,
-        "stats": file_stats,
-        "results": file_results,
-        "logs": file_logs,
-    }
+        return {
+            "pdf_name": file_name,
+            "pages": page_count,
+            "total_results": len(file_results),
+            "total_chars": file_total_chars,
+            "stats": file_stats,
+            "results": file_results,
+            "logs": file_logs,
+        }
 
+    finally:
+        doc.close()
 
 @app.post("/search")
 async def search_pdf(

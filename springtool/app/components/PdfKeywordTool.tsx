@@ -55,7 +55,7 @@ type ApiResponse = {
   contact: string;
 };
 
-const MAX_FILES = 10;
+const MAX_FILES = 30;
 
 const translations = {
   en: {
@@ -63,20 +63,19 @@ const translations = {
     title: "PDF Keyword Search Tool",
     brand: "by springtool",
     description:
-      "Upload up to 10 PDFs, search multiple keywords, and extract matched sentences with PDF names and page numbers.",
+      "Upload up to 30 PDFs, search multiple keywords, and extract matched sentences with PDF names and page numbers.",
     featureLocate: "Precise keyword locating",
     featureOcr: "OCR support",
     featureStats: "Keyword statistics",
     featureExport: "Export results",
 
     uploadTitle: "Upload PDF Files",
-    uploadDesc: "Click or drag up to 10 PDF files here",
+    uploadDesc: "Click or drag up to 30 PDF files here",
     uploadSubDesc:
-      "Up to 10 PDF files supported. Recommended total size: up to 500MB",
+      "Up to 30 PDF files supported. OCR for large scanned files may take longer.",
     uploadButton: "Select PDF Files",
     selected: "Selected files",
-    maxFiles: "Maximum 10 PDF files can be uploaded at once.",
-    selectedLimit: "Selected files",
+    maxFiles: "Maximum 30 PDF files can be uploaded at once.",
 
     keywordTitle: "Enter Keywords",
     keywordPlaceholder: "Enter keywords, separated by commas",
@@ -85,12 +84,15 @@ const translations = {
     optionTitle: "Search Options",
     enableOcr: "Enable OCR for scanned PDFs",
     enableOcrDesc:
-      "For scanned or image-based PDFs. Large scanned PDFs may take longer.",
+      "For scanned or image-based PDFs. Large scanned PDFs may take longer, especially when many files are uploaded.",
     showContext: "Show surrounding context",
     showContextDesc: "Display context around matched sentences",
 
     startSearch: "Start Search",
-    searching: "Searching...",
+    searching:
+      "Searching... If the server is waking up, this may take 30-60 seconds.",
+    retrying:
+      "The server may be waking up. Retrying automatically... Please wait.",
     tip: "Results show PDF name, keyword, page number, and matched sentence.",
 
     pdfAnalysis: "PDF Analysis Results",
@@ -121,14 +123,14 @@ const translations = {
     uploadAlert: "Please upload at least one PDF file.",
     keywordAlert: "Please enter at least one keyword.",
     backendAlert:
-      "Backend connection failed. Please check if FastAPI is running.",
+      "Backend connection failed. The server may be busy or waking up. Please try again in a moment.",
     excelFail: "Excel download failed. Please try again.",
     wordFail: "Word download failed. Please try again.",
     noResult: "No matched sentences found.",
 
     seoTitle: "Search Keywords Across Multiple PDF Files",
     seoDesc:
-      "springtool helps researchers, students, and professionals search keywords across up to 10 PDF files at once. It extracts matched sentences, PDF names, page numbers, keyword statistics, and exportable reports.",
+      "springtool helps researchers, students, and professionals search keywords across up to 30 PDF files at once. It extracts matched sentences, PDF names, page numbers, keyword statistics, and exportable reports.",
     seoCards: [
       {
         title: "For researchers",
@@ -151,7 +153,7 @@ const translations = {
       },
       {
         q: "Can I upload multiple PDF files?",
-        a: "Yes. You can upload up to 10 PDF files at once.",
+        a: "Yes. You can upload up to 30 PDF files at once.",
       },
       {
         q: "Can I search multiple keywords?",
@@ -163,7 +165,7 @@ const translations = {
       },
       {
         q: "Does it support scanned PDFs?",
-        a: "Yes. You can enable OCR for scanned or image-based PDFs.",
+        a: "Yes. You can enable OCR for scanned or image-based PDFs. Large scanned files may take longer.",
       },
       {
         q: "Can I export the results?",
@@ -180,19 +182,19 @@ const translations = {
     title: "PDF关键词搜索工具",
     brand: "by springtool",
     description:
-      "最多上传 10 个 PDF，输入多个关键词，并输出 PDF 名称、页码与匹配句子。",
+      "最多上传 30 个 PDF，输入多个关键词，并输出 PDF 名称、页码与匹配句子。",
     featureLocate: "精准定位关键词",
     featureOcr: "支持 OCR 识别",
     featureStats: "关键词统计分析",
     featureExport: "一键导出结果",
 
     uploadTitle: "上传 PDF 文件",
-    uploadDesc: "点击或拖拽最多 10 个 PDF 文件到此处",
-    uploadSubDesc: "支持最多 10 个 PDF 文件上传，建议总大小不超过 500MB",
+    uploadDesc: "点击或拖拽最多 30 个 PDF 文件到此处",
+    uploadSubDesc:
+      "支持最多 30 个 PDF 文件。若启用 OCR，大型扫描 PDF 可能需要更长时间。",
     uploadButton: "选择 PDF 文件",
     selected: "已选择文件",
-    maxFiles: "一次最多只能上传 10 个 PDF 文件。",
-    selectedLimit: "已选择文件",
+    maxFiles: "一次最多只能上传 30 个 PDF 文件。",
 
     keywordTitle: "输入关键词",
     keywordPlaceholder: "请输入关键词，多个关键词请用逗号分隔",
@@ -200,12 +202,14 @@ const translations = {
 
     optionTitle: "搜索选项",
     enableOcr: "启用 OCR 识别扫描版 PDF",
-    enableOcrDesc: "适用于扫描版或图片版 PDF，大型扫描 PDF 可能需要更长时间。",
+    enableOcrDesc:
+      "适用于扫描版或图片版 PDF。若同时上传多个大型扫描 PDF，可能需要更长时间。",
     showContext: "显示前后句上下文",
     showContextDesc: "展示匹配句子的上下文内容",
 
     startSearch: "开始搜索",
-    searching: "分析中...",
+    searching: "分析中... 如果服务器正在启动，可能需要 30-60 秒。",
+    retrying: "服务器可能正在启动中，系统正在自动重试，请稍等。",
     tip: "结果会显示 PDF 名称、关键词、页码与匹配句子。",
 
     pdfAnalysis: "PDF 分析结果",
@@ -235,14 +239,15 @@ const translations = {
 
     uploadAlert: "请先上传至少一个 PDF 文件。",
     keywordAlert: "请输入至少一个关键词。",
-    backendAlert: "后端连接失败，请确认 FastAPI 是否正在运行。",
+    backendAlert:
+      "后端连接失败，服务器可能正在启动或繁忙，请稍后再试。",
     excelFail: "Excel 下载失败，请稍后再试。",
     wordFail: "Word 下载失败，请稍后再试。",
     noResult: "没有找到匹配句子。",
 
     seoTitle: "批量搜索多个 PDF 文件中的关键词",
     seoDesc:
-      "springtool 可以帮助研究人员、学生和职场用户一次性搜索最多 10 个 PDF 文件，快速提取匹配句子、PDF 名称、页码、关键词统计和可导出的报告。",
+      "springtool 可以帮助研究人员、学生和职场用户一次性搜索最多 30 个 PDF 文件，快速提取匹配句子、PDF 名称、页码、关键词统计和可导出的报告。",
     seoCards: [
       {
         title: "适合研究人员",
@@ -265,7 +270,7 @@ const translations = {
       },
       {
         q: "可以上传多个 PDF 文件吗？",
-        a: "可以。一次最多支持上传 10 个 PDF 文件。",
+        a: "可以。一次最多支持上传 30 个 PDF 文件。",
       },
       {
         q: "可以搜索多个关键词吗？",
@@ -277,7 +282,7 @@ const translations = {
       },
       {
         q: "支持扫描版 PDF 吗？",
-        a: "支持。可以启用 OCR 来识别扫描版或图片版 PDF。",
+        a: "支持。可以启用 OCR 来识别扫描版或图片版 PDF，大型扫描文件可能需要更长时间。",
       },
       {
         q: "结果可以导出吗？",
@@ -294,20 +299,19 @@ const translations = {
     title: "PDF 키워드 검색 도구",
     brand: "by springtool",
     description:
-      "최대 10개의 PDF를 업로드하고 여러 키워드를 검색하여 PDF명, 페이지 번호, 매칭 문장을 함께 확인합니다.",
+      "최대 30개의 PDF를 업로드하고 여러 키워드를 검색하여 PDF명, 페이지 번호, 매칭 문장을 함께 확인합니다.",
     featureLocate: "키워드 정밀 검색",
     featureOcr: "OCR 지원",
     featureStats: "키워드 통계 분석",
     featureExport: "결과 내보내기",
 
     uploadTitle: "PDF 파일 업로드",
-    uploadDesc: "최대 10개의 PDF 파일을 클릭하거나 드래그하세요",
+    uploadDesc: "최대 30개의 PDF 파일을 클릭하거나 드래그하세요",
     uploadSubDesc:
-      "최대 10개의 PDF 파일을 지원합니다. 권장 총 용량 최대 500MB",
+      "최대 30개의 PDF 파일을 지원합니다. OCR을 켜면 대용량 스캔 PDF는 시간이 오래 걸릴 수 있습니다.",
     uploadButton: "PDF 파일 선택",
     selected: "선택된 파일",
-    maxFiles: "PDF 파일은 한 번에 최대 10개까지 업로드할 수 있습니다.",
-    selectedLimit: "선택된 파일",
+    maxFiles: "PDF 파일은 한 번에 최대 30개까지 업로드할 수 있습니다.",
 
     keywordTitle: "키워드 입력",
     keywordPlaceholder: "키워드를 입력하세요. 여러 개는 쉼표로 구분",
@@ -316,12 +320,13 @@ const translations = {
     optionTitle: "검색 옵션",
     enableOcr: "스캔 PDF OCR 인식",
     enableOcrDesc:
-      "스캔본 또는 이미지형 PDF에 사용합니다. 대용량 스캔 PDF는 시간이 오래 걸릴 수 있습니다.",
+      "스캔본 또는 이미지형 PDF에 사용합니다. 여러 대용량 스캔 PDF를 동시에 처리하면 시간이 오래 걸릴 수 있습니다.",
     showContext: "앞뒤 문장 표시",
     showContextDesc: "매칭 문장의 주변 문맥 표시",
 
     startSearch: "검색 시작",
-    searching: "분석 중...",
+    searching: "분석 중... 서버가 시작 중이면 30~60초 정도 걸릴 수 있습니다.",
+    retrying: "서버가 시작 중일 수 있어 자동으로 다시 시도하고 있습니다. 잠시만 기다려주세요.",
     tip: "결과에는 PDF명, 키워드, 페이지 번호, 매칭 문장이 함께 표시됩니다.",
 
     pdfAnalysis: "PDF 분석 결과",
@@ -351,14 +356,15 @@ const translations = {
 
     uploadAlert: "먼저 PDF 파일을 1개 이상 업로드해주세요.",
     keywordAlert: "키워드를 최소 1개 입력해주세요.",
-    backendAlert: "백엔드 연결에 실패했습니다. FastAPI 실행 여부를 확인해주세요.",
+    backendAlert:
+      "백엔드 연결에 실패했습니다. 서버가 시작 중이거나 바쁠 수 있으니 잠시 후 다시 시도해주세요.",
     excelFail: "Excel 다운로드에 실패했습니다. 다시 시도해주세요.",
     wordFail: "Word 다운로드에 실패했습니다. 다시 시도해주세요.",
     noResult: "매칭된 문장이 없습니다.",
 
     seoTitle: "여러 PDF에서 키워드와 페이지 번호를 한 번에 검색하세요",
     seoDesc:
-      "springtool은 연구자, 학생, 직장인이 최대 10개의 PDF 파일에서 키워드를 한 번에 검색하고, 매칭 문장과 PDF명, 페이지 번호, 키워드 통계, 내보내기용 리포트를 확인할 수 있도록 돕는 도구입니다.",
+      "springtool은 연구자, 학생, 직장인이 최대 30개의 PDF 파일에서 키워드를 한 번에 검색하고, 매칭 문장과 PDF명, 페이지 번호, 키워드 통계, 내보내기용 리포트를 확인할 수 있도록 돕는 도구입니다.",
     seoCards: [
       {
         title: "연구자에게 적합",
@@ -381,7 +387,7 @@ const translations = {
       },
       {
         q: "여러 PDF를 한 번에 업로드할 수 있나요?",
-        a: "네. 한 번에 최대 10개의 PDF 파일을 업로드할 수 있습니다.",
+        a: "네. 한 번에 최대 30개의 PDF 파일을 업로드할 수 있습니다.",
       },
       {
         q: "여러 키워드를 동시에 검색할 수 있나요?",
@@ -393,7 +399,7 @@ const translations = {
       },
       {
         q: "스캔 PDF도 지원하나요?",
-        a: "네. OCR 옵션을 켜면 스캔본 또는 이미지형 PDF를 인식할 수 있습니다.",
+        a: "네. OCR 옵션을 켜면 스캔본 또는 이미지형 PDF를 인식할 수 있습니다. 대용량 스캔 파일은 시간이 오래 걸릴 수 있습니다.",
       },
       {
         q: "결과를 파일로 저장할 수 있나요?",
@@ -410,20 +416,19 @@ const translations = {
     title: "PDFキーワード検索ツール",
     brand: "by springtool",
     description:
-      "最大10個のPDFをアップロードし、複数キーワードを検索してPDF名・ページ番号・一致文章を表示します。",
+      "最大30個のPDFをアップロードし、複数キーワードを検索してPDF名・ページ番号・一致文章を表示します。",
     featureLocate: "キーワード精密検索",
     featureOcr: "OCR対応",
     featureStats: "キーワード統計分析",
     featureExport: "結果エクスポート",
 
     uploadTitle: "PDFファイルをアップロード",
-    uploadDesc: "最大10個のPDFファイルをクリックまたはドラッグ",
+    uploadDesc: "最大30個のPDFファイルをクリックまたはドラッグ",
     uploadSubDesc:
-      "最大10個のPDFファイルに対応。推奨合計サイズは最大500MB",
+      "最大30個のPDFファイルに対応。OCRを有効にすると大容量スキャンPDFは時間がかかる場合があります。",
     uploadButton: "PDFファイルを選択",
     selected: "選択済みファイル",
-    maxFiles: "一度にアップロードできるPDFファイルは最大10個です。",
-    selectedLimit: "選択済みファイル",
+    maxFiles: "一度にアップロードできるPDFファイルは最大30個です。",
 
     keywordTitle: "キーワード入力",
     keywordPlaceholder: "キーワードを入力、複数の場合はカンマで区切る",
@@ -432,12 +437,15 @@ const translations = {
     optionTitle: "検索オプション",
     enableOcr: "スキャンPDFのOCR認識",
     enableOcrDesc:
-      "スキャン版または画像PDF向け。大容量のスキャンPDFは時間がかかる場合があります。",
+      "スキャン版または画像PDF向け。複数の大容量スキャンPDFを処理する場合、時間がかかることがあります。",
     showContext: "前後の文脈を表示",
     showContextDesc: "一致した文の前後文脈を表示",
 
     startSearch: "検索開始",
-    searching: "分析中...",
+    searching:
+      "分析中... サーバー起動中の場合、30〜60秒ほどかかることがあります。",
+    retrying:
+      "サーバーが起動中の可能性があります。自動で再試行しています。少々お待ちください。",
     tip: "結果にはPDF名、キーワード、ページ番号、一致文章が表示されます。",
 
     pdfAnalysis: "PDF分析結果",
@@ -467,14 +475,15 @@ const translations = {
 
     uploadAlert: "先にPDFファイルを1つ以上アップロードしてください。",
     keywordAlert: "キーワードを1つ以上入力してください。",
-    backendAlert: "バックエンド接続に失敗しました。FastAPIの起動を確認してください。",
+    backendAlert:
+      "バックエンド接続に失敗しました。サーバーが起動中、または混雑している可能性があります。しばらくしてからもう一度お試しください。",
     excelFail: "Excelのダウンロードに失敗しました。もう一度お試しください。",
     wordFail: "Wordのダウンロードに失敗しました。もう一度お試しください。",
     noResult: "一致した文がありません。",
 
     seoTitle: "複数PDFからキーワードとページ番号を一括検索",
     seoDesc:
-      "springtoolは、研究者・学生・ビジネスユーザーが最大10個のPDFファイルからキーワードを一括検索し、一致文章、PDF名、ページ番号、キーワード統計、エクスポート用レポートを確認できるツールです。",
+      "springtoolは、研究者・学生・ビジネスユーザーが最大30個のPDFファイルからキーワードを一括検索し、一致文章、PDF名、ページ番号、キーワード統計、エクスポート用レポートを確認できるツールです。",
     seoCards: [
       {
         title: "研究者向け",
@@ -497,7 +506,7 @@ const translations = {
       },
       {
         q: "複数のPDFを一度にアップロードできますか？",
-        a: "はい。一度に最大10個のPDFファイルをアップロードできます。",
+        a: "はい。一度に最大30個のPDFファイルをアップロードできます。",
       },
       {
         q: "複数キーワードを同時に検索できますか？",
@@ -509,7 +518,7 @@ const translations = {
       },
       {
         q: "スキャンPDFに対応していますか？",
-        a: "はい。OCRオプションを有効にすると、スキャン版または画像PDFを認識できます。",
+        a: "はい。OCRオプションを有効にすると、スキャン版または画像PDFを認識できます。大容量スキャンファイルは時間がかかる場合があります。",
       },
       {
         q: "結果をエクスポートできますか？",
@@ -532,6 +541,44 @@ const fontStacks = {
 const developerName = "스프링툴바";
 const developerEmail = "springtoolbar@gmail.com";
 
+const sleep = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+const fetchWithRetry = async (
+  url: string,
+  options: RequestInit,
+  retries = 3,
+  delayMs = 7000,
+  onRetry?: () => void
+) => {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+
+      if (response.ok) {
+        return response;
+      }
+
+      lastError = new Error(`Request failed with status ${response.status}`);
+    } catch (error) {
+      lastError = error;
+    }
+
+    if (attempt < retries) {
+      if (onRetry) {
+        onRetry();
+      }
+
+      await sleep(delayMs);
+    }
+  }
+
+  throw lastError;
+};
+
 export default function PdfKeywordTool({
   defaultLang = "en",
 }: {
@@ -547,6 +594,7 @@ export default function PdfKeywordTool({
   const [showContext, setShowContext] = useState(false);
 
   const [loading, setLoading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
   const [data, setData] = useState<ApiResponse | null>(null);
 
   const getApiUrl = () => {
@@ -586,6 +634,7 @@ export default function PdfKeywordTool({
     }
 
     setLoading(true);
+    setStatusMessage(t.searching);
     setData(null);
 
     const formData = new FormData();
@@ -601,20 +650,24 @@ export default function PdfKeywordTool({
     try {
       const apiUrl = getApiUrl();
 
-      const response = await fetch(`${apiUrl}/search`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Backend request failed");
-      }
+      const response = await fetchWithRetry(
+        `${apiUrl}/search`,
+        {
+          method: "POST",
+          body: formData,
+        },
+        3,
+        7000,
+        () => setStatusMessage(t.retrying)
+      );
 
       const result = await response.json();
       setData(result);
+      setStatusMessage("");
     } catch (error) {
       console.error(error);
       alert(t.backendAlert);
+      setStatusMessage("");
     } finally {
       setLoading(false);
     }
@@ -626,17 +679,18 @@ export default function PdfKeywordTool({
     try {
       const apiUrl = getApiUrl();
 
-      const response = await fetch(`${apiUrl}/export/excel`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetchWithRetry(
+        `${apiUrl}/export/excel`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
         },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Excel export failed");
-      }
+        2,
+        5000
+      );
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -661,17 +715,18 @@ export default function PdfKeywordTool({
     try {
       const apiUrl = getApiUrl();
 
-      const response = await fetch(`${apiUrl}/export/word`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetchWithRetry(
+        `${apiUrl}/export/word`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
         },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Word export failed");
-      }
+        2,
+        5000
+      );
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -859,6 +914,12 @@ export default function PdfKeywordTool({
             <Search className="h-6 w-6" />
             {loading ? t.searching : t.startSearch}
           </button>
+
+          {statusMessage && (
+            <div className="mx-auto max-w-3xl rounded-2xl border border-[#cfe0ca] bg-white px-5 py-4 text-center text-sm font-bold text-[#2f6b4f] shadow-sm">
+              {statusMessage}
+            </div>
+          )}
 
           <p className="text-center text-sm font-medium text-[#7d8f82]">
             🌿 {t.tip}
